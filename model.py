@@ -247,11 +247,27 @@ def sum_keepdims(arr, axis):
     
     return np.sum(arr,axis=axis,keepdims = True)
 
-# Step 30 - naive_softmax_1d (not yet solved)
-# TODO: implement
+# Step 30 - naive_softmax_1d
+import numpy as np
 
-# Step 31 - softmax_overflow_demo (not yet solved)
-# TODO: implement
+def naive_softmax_1d(logits):
+    """Compute softmax of a 1D logits vector via the direct exp/sum formula."""
+    # TODO: exponentiate the logits, then divide by their total sum
+    return np.exp(logits)/np.sum(np.exp(logits))
+
+# Step 31 - softmax_overflow_demo
+def softmax_overflow_demo(large_value):
+    """Show that naive exp overflows on a large logit.
+
+    Return {'naive_exp': float, 'overflowed': bool}.
+    """
+    # TODO: exponentiate large_value via array_exp and report whether it is inf.
+    naive_exp = np.exp(large_value)
+    if(naive_exp == float('inf')):
+        overflowed = True
+    else:
+        overflowed = False
+    return {'naive_exp': naive_exp, 'overflowed': overflowed}
 
 # Step 32 - stable_softmax_1d (not yet solved)
 # TODO: implement
