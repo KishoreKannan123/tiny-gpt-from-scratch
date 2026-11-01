@@ -487,7 +487,6 @@ def scale_w_small(w_matrix, scale):
 # Step 59 - one_hot_encode_batch
 import numpy as np
 
-import numpy as np
 
 def one_hot_encode_batch(ids, vocab_size):
     """Convert a 1D array of token ids into a (N, vocab_size) one-hot matrix."""
