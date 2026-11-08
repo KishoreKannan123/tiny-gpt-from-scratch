@@ -546,8 +546,20 @@ def derive_dlogits_on_paper():
     # TODO: return a short written derivation ending in dL/dlogits = (probs - onehot(targets)) / B
     return 'dL/dlogits = (probs - onehot(targets)) / B , where probs = softmax(logits) , loss is mean cross entropy loss '
 
-# Step 67 - compute_dlogits (not yet solved)
-# TODO: implement
+# Step 67 - compute_dlogits
+import numpy as np
+
+def compute_dlogits(probs, targets):
+    """Gradient of mean cross-entropy w.r.t. logits. probs: (B,V), targets: (B,)."""
+    B, V = probs.shape
+    
+    # Create a one-hot representation of the targets
+    target_mat = np.zeros_like(probs)
+    target_mat[np.arange(B), targets] = 1.0
+    
+    # Gradient of cross-entropy w.r.t logits for a single sample is (probs - target_mat).
+    # Since the loss is averaged over the batch, we divide by B.
+    return (probs - target_mat) / B
 
 # Step 68 - derive_dw_on_paper (not yet solved)
 # TODO: implement
