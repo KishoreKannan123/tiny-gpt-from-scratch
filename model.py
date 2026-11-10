@@ -613,12 +613,13 @@ def train_neural_bigram_loop(w, data, block_size, batch_size, learning_rate, num
     for i in range(num_steps):
 
         ids,targets = get_batch(data,block_size,batch_size,rng)
-        print(ids,targets)
+        ids = ids.reshape(-1)
+        targets= targets.reshape(-1)
         d = run_one_training_step(w, ids, targets, learning_rate)
-        print(d)
+        # print(d)
         w = d['w']
         loss = d['loss']
-        if((i+1)%log_every == 0):
+        if((i)%log_every == 0):
             loss_history.append(loss)
         
     return {'w':w,'loss_history':loss_history}
