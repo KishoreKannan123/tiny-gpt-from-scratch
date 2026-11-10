@@ -537,7 +537,7 @@ import numpy as np
 def cross_entropy_loss(probs, targets):
     """Mean negative log-likelihood over a batch."""
     # TODO: gather correct-token probs, take log, average the negatives
-
+    # print(probs.shape,targets.shape)
     return -np.mean(np.log(gather_correct_token_probs(probs,targets)))
 
 # Step 66 - derive_dlogits_on_paper
@@ -603,8 +603,25 @@ def run_one_training_step(w, ids, targets, learning_rate):
 
     return {'w':update,'loss':loss}
 
-# Step 72 - train_neural_bigram_loop (not yet solved)
-# TODO: implement
+# Step 72 - train_neural_bigram_loop
+def train_neural_bigram_loop(w, data, block_size, batch_size, learning_rate, num_steps, log_every):
+    """Run the neural bigram training loop and return {'w', 'loss_history'}."""
+    # TODO: repeatedly sample a batch, run one training step, and log loss every log_every steps
+
+    loss_history = []
+    rng = np.random.default_rng()
+    for i in range(num_steps):
+
+        ids,targets = get_batch(data,block_size,batch_size,rng)
+        print(ids,targets)
+        d = run_one_training_step(w, ids, targets, learning_rate)
+        print(d)
+        w = d['w']
+        loss = d['loss']
+        if((i+1)%log_every == 0):
+            loss_history.append(loss)
+        
+    return {'w':w,'loss_history':loss_history}
 
 # Step 73 - sample_from_neural_bigram (not yet solved)
 # TODO: implement
