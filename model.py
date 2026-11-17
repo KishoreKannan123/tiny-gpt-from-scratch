@@ -781,8 +781,50 @@ def layernorm_backward_divide_std(dy, cache):
     # TODO: propagate the upstream gradient through the divide-by-std step of LayerNorm
     return dy/np.sqrt(cache['var']+cache['eps'])
 
-# Step 90 - layernorm_backward_full (not yet solved)
-# TODO: implement
+# Step 90 - layernorm_backward_full
+import numpy as np
+
+def layernorm_backward_full(dy, cache):
+    """Full LayerNorm backward. Return {'dx', 'dgamma', 'dbeta'}."""
+    gamma = cache['gamma']
+    x_hat = cache['x_hat']
+    mean = cache['mean']
+    var = cache['var']
+    eps = cache['eps']
+    x = cache['x']
+
+    # Dimension of the normalized axis (typically the last dimension)
+    N = x.shape[-1]
+    
+    # Determine axes to sum over for batch/spatial dimensions (all dims except the last)
+    axes = tuple(range(x.ndim - 1)) if x.ndim > 1 else 0
+
+    # 1. Gradients for scale (gamma) and shift (beta)
+    dgamma = np.sum(dy * x_hat, axis=axes)
+    dbeta = np.sum(dy, axis=axes)
+
+    # 2. Gradient with respect to normalized input (x_hat)
+    dx_hat = dy * gamma
+
+    # 3. Intermediate variables for variance and standard deviation inverse
+    std_inv = 1.0 / np.sqrt(var + eps)
+
+    # 4. Gradient with respect to variance (sigma^2)
+    dvar = np.sum(dx_hat * (x - mean) * (-0.5) * (std_inv ** 3), axis=-1, keepdims=True)
+
+    # 5. Gradient with respect to mean (mu)
+    # Note: The term involving dvar's derivative with respect to mean evaluates to 0 
+    # because the sum of centered values sum to zero: sum(x - mean) = 0.
+    dmean = np.sum(dx_hat * (-std_inv), axis=-1, keepdims=True)
+
+    # 6. Gradient with respect to input x
+    dx = (dx_hat * std_inv) + (dvar * 2.0 * (x - mean) / N) + (dmean / N)
+
+    return {
+        'dx': dx,
+        'dgamma': dgamma,
+        'dbeta': dbeta
+    }
 
 # Step 91 - layernorm_backward_implementation (not yet solved)
 # TODO: implement
